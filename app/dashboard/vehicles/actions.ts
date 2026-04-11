@@ -57,6 +57,7 @@ export async function createVehicle(formData: FormData) {
     first_registration: optionalString(formData, 'first_registration'),
     purchase_price: optionalDecimal(formData, 'purchase_price'),
     hu_until: optionalString(formData, 'hu_until'),
+    mileage_km: optionalInteger(formData, 'mileage_km'),
 
     engine_ccm: optionalInteger(formData, 'engine_ccm'),
     power_kw: optionalInteger(formData, 'power_kw'),
@@ -68,7 +69,7 @@ export async function createVehicle(formData: FormData) {
     axle_load_4_kg: optionalInteger(formData, 'axle_load_4_kg'),
     previous_owners: optionalInteger(formData, 'previous_owners'),
 
-    mileage_km: optionalInteger(formData, 'mileage_km'),
+  
     vat_type: optionalString(formData, 'vat_type'),
     purchase_payment_method: optionalString(formData, 'purchase_payment_method'),
   }
@@ -163,6 +164,7 @@ export async function updateVehicle(formData: FormData) {
     first_registration: optionalString(formData, 'first_registration'),
     purchase_price: optionalDecimal(formData, 'purchase_price'),
     hu_until: optionalString(formData, 'hu_until'),
+    mileage_km: optionalInteger(formData, 'mileage_km'),
 
     engine_ccm: optionalInteger(formData, 'engine_ccm'),
     power_kw: optionalInteger(formData, 'power_kw'),
@@ -174,7 +176,7 @@ export async function updateVehicle(formData: FormData) {
     axle_load_4_kg: optionalInteger(formData, 'axle_load_4_kg'),
     previous_owners: optionalInteger(formData, 'previous_owners'),
 
-    mileage_km: optionalInteger(formData, 'mileage_km'),
+   
     vat_type: optionalString(formData, 'vat_type'),
     purchase_payment_method: optionalString(formData, 'purchase_payment_method'),
     

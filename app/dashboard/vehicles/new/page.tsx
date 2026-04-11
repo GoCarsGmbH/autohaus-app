@@ -109,6 +109,18 @@ export default async function NewVehiclePage() {
                 className="w-full rounded-lg border px-3 py-2"
               />
             </div>
+
+            <div>
+              <label htmlFor="mileage_km" className="mb-1 block text-sm font-medium">
+                Kilometerstand
+              </label>
+              <input
+                id="mileage_km"
+                name="mileage_km"
+                type="number"
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
           </div>
         </section>
 
@@ -243,17 +255,7 @@ export default async function NewVehiclePage() {
               />
             </div>
 
-            <div>
-              <label htmlFor="mileage_km" className="mb-1 block text-sm font-medium">
-                Kilometerstand
-              </label>
-              <input
-                id="mileage_km"
-                name="mileage_km"
-                type="number"
-                className="w-full rounded-lg border px-3 py-2"
-              />
-            </div>
+
 
             <div>
               <label htmlFor="vat_type" className="mb-1 block text-sm font-medium">

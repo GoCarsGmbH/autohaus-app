@@ -130,6 +130,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           <div><span className="font-medium">Farbe:</span> {displayValue(vehicle.color)}</div>
           <div><span className="font-medium">Erstzulassung:</span> {formatDate(vehicle.first_registration)}</div>
           <div><span className="font-medium">HU-bis:</span> {formatDate(vehicle.hu_until)}</div>
+          <div><span className="font-medium">Kilometerstand:</span> {displayValue(vehicle.mileage_km)}</div>
         </div>
       </section>
 
@@ -147,17 +148,18 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           <div><span className="font-medium">Vorbesitzer:</span> {displayValue(vehicle.previous_owners)}</div>
         </div>
       </section>
-
+  {isAdmin ? (
       <section className="rounded-2xl border p-5">
         <h2 className="mb-4 text-lg font-medium">Einkauf</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div><span className="font-medium">Kaufpreis:</span> {formatCurrency(vehicle.purchase_price)}</div>
-          <div><span className="font-medium">Kilometerstand:</span> {displayValue(vehicle.mileage_km)}</div>
           <div><span className="font-medium">USt-Status:</span> {displayValue(vehicle.vat_type)}</div>
           <div><span className="font-medium">Zahlungsart Einkauf:</span> {displayValue(vehicle.purchase_payment_method)}</div>
         </div>
       </section>
+  ) : null}
 
+  {isAdmin ? (
       <section className="rounded-2xl border p-5">
         <h2 className="mb-4 text-lg font-medium">Verkauf</h2>
         <div className="grid gap-4 md:grid-cols-2">
@@ -169,7 +171,8 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           <div><span className="font-medium">Verkaufsart:</span> {displayValue(vehicle.sale_vat_type)}</div>
         </div>
       </section>
-
+  ) : null}
+{isAdmin ? (
       <section className="rounded-2xl border p-5">
         <h2 className="mb-4 text-lg font-medium">OCR</h2>
         <div className="grid gap-4 md:grid-cols-2">
@@ -186,6 +189,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           </div>
         ) : null}
       </section>
+  ) : null}
 
       <section className="rounded-2xl border p-5">
   <h2 className="mb-4 text-lg font-medium">Dokumente</h2>

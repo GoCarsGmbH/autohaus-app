@@ -3,10 +3,45 @@ import { createClient } from '@/lib/supabase/server'
 import { logout } from './actions'
 import { getUserProfile } from '@/lib/auth/get-user-profile'
 import ImageModal from '@/components/image-modal'
+import SearchBar from './search-bar'
+import SortBar from './sort-bar'
 
 type SearchParams = Promise<{
   status?: string
+  query?: string
+  sort?: string
+  dir?: string
 }>
+
+function dashboardHref(
+  nextStatus: string,
+  currentQuery: string,
+  currentSort: string,
+  currentDir: string
+) {
+  const params = new URLSearchParams()
+
+  if (nextStatus !== 'alle') {
+    params.set('status', nextStatus)
+  }
+
+  if (currentQuery) {
+    params.set('query', currentQuery)
+  }
+
+  if (currentSort && currentSort !== 'created_at') {
+    params.set('sort', currentSort)
+  } else if (currentSort === 'created_at') {
+    params.set('sort', currentSort)
+  }
+
+  if (currentDir) {
+    params.set('dir', currentDir)
+  }
+
+  const qs = params.toString()
+  return qs ? `/dashboard?${qs}` : '/dashboard'
+}
 
 export default async function DashboardPage({
   searchParams,
@@ -25,17 +60,52 @@ export default async function DashboardPage({
       ? params.status
       : 'alle'
 
-  let query = supabase
-    .from('vehicles_dashboard')
-    .select('id, internal_vehicle_id, brand, model, vin, first_registration, purchase_price, hu_until, image_document_id, status')
-    .order('created_at', { ascending: false })
+  const queryText =
+    typeof params.query === 'string' ? params.query.trim() : '' 
 
-  if (status !== 'alle') {
-    query = query.eq('status', status)
-  }
+const sort =
+  params.sort === 'brand_model' ||
+  params.sort === 'first_registration' ||
+  params.sort === 'created_at'
+    ? params.sort
+    : 'created_at'
 
-  const { data, error } = await query
- 
+const dir = params.dir === 'asc' ? 'asc' : 'desc'
+const ascending = dir === 'asc'
+
+let vehiclesQuery = supabase
+  .from('vehicles_dashboard')
+  .select(
+    'id, internal_vehicle_id, brand, model, vin, first_registration, purchase_price, hu_until, mileage_km, image_document_id, status, created_at'
+  )
+
+if (status !== 'alle') {
+  vehiclesQuery = vehiclesQuery.eq('status', status)
+}
+
+if (queryText) {
+  const escaped = queryText.replace(/[%_]/g, '')
+  vehiclesQuery = vehiclesQuery.or(
+    [
+      `internal_vehicle_id.ilike.%${escaped}%`,
+      `brand.ilike.%${escaped}%`,
+      `model.ilike.%${escaped}%`,
+      `vin.ilike.%${escaped}%`,
+    ].join(',')
+  )
+}
+
+if (sort === 'brand_model') {
+  vehiclesQuery = vehiclesQuery
+    .order('brand', { ascending })
+    .order('model', { ascending })
+} else if (sort === 'first_registration') {
+  vehiclesQuery = vehiclesQuery.order('first_registration', { ascending })
+} else {
+  vehiclesQuery = vehiclesQuery.order('created_at', { ascending })
+}
+
+const { data, error } = await vehiclesQuery
 
   if (error) {
     return (
@@ -85,32 +155,46 @@ export default async function DashboardPage({
     </form>
   </div>
 </div>
-        <div className="mb-4 flex gap-3">
-        <Link
-            href="/dashboard"
-            className={`rounded-lg border px-4 py-2 text-sm ${status === 'alle' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
-        >
-            Alle
-        </Link>
-        <Link
-            href="/dashboard?status=verfuegbar"
-            className={`rounded-lg border px-4 py-2 text-sm ${status === 'verfuegbar' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
-        >
-            Verfügbar
-        </Link>
-        <Link
-            href="/dashboard?status=reserviert"
-            className={`rounded-lg border px-4 py-2 text-sm ${status === 'reserviert' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
-        >
-            Reserviert
-        </Link>
-        <Link
-            href="/dashboard?status=verkauft"
-            className={`rounded-lg border px-4 py-2 text-sm ${status === 'verkauft' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
-        >
-            Verkauft
-        </Link>
-        </div>
+       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+  <SearchBar />
+  <SortBar />
+</div>
+
+        {queryText ? (
+  <p className="mb-4 text-sm text-gray-600">
+    Suche: <span className="font-medium">{queryText}</span>
+  </p>
+) : null}
+
+
+
+      <div className="mb-4 flex gap-3">
+            <Link
+              href={dashboardHref('alle', queryText, sort, dir)}
+              className={`rounded-lg border px-4 py-2 text-sm ${status === 'alle' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
+            >
+              Alle
+            </Link>
+            <Link
+              href={dashboardHref('verfuegbar', queryText, sort, dir)}
+              className={`rounded-lg border px-4 py-2 text-sm ${status === 'verfuegbar' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
+            >
+              Verfügbar
+            </Link>
+            <Link
+              href={dashboardHref('reserviert', queryText, sort, dir)}
+              className={`rounded-lg border px-4 py-2 text-sm ${status === 'reserviert' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
+            >
+              Reserviert
+            </Link>
+            <Link
+              href={dashboardHref('verkauft', queryText, sort, dir)}
+              className={`rounded-lg border px-4 py-2 text-sm ${status === 'verkauft' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
+            >
+              Verkauft
+            </Link>
+          </div>
+
       <div className="overflow-x-auto rounded-xl border">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50">
@@ -120,7 +204,10 @@ export default async function DashboardPage({
               <th className="px-4 py-3 text-left">Model</th>
               <th className="px-4 py-3 text-left">FIN</th>
               <th className="px-4 py-3 text-left">Erstzulassung</th>
+              <th className="px-4 py-3 text-left">Kilometerstand</th>
+              { isAdmin ? (
               <th className="px-4 py-3 text-left">Kaufpreis</th>
+              ) : null }
               <th className="px-4 py-3 text-left">HU-bis</th>
               <th className="px-4 py-3 text-left">Details</th>
               <th className="px-4 py-3 text-left">Verkauf</th>
@@ -147,7 +234,10 @@ export default async function DashboardPage({
                   <td className="px-4 py-3">{vehicle.model}</td>
                   <td className="px-4 py-3">{vehicle.vin}</td>
                   <td className="px-4 py-3">{vehicle.first_registration ?? '—'}</td>
+                  <td className="px-4 py-3">{vehicle.mileage_km ?? '—'}</td>
+                  { isAdmin ? (
                   <td className="px-4 py-3">{vehicle.purchase_price ?? '—'}</td>
+                  ) : null }
                   <td className="px-4 py-3">{vehicle.hu_until ?? '—'}</td>
                   <td className="px-4 py-3">
                     <Link

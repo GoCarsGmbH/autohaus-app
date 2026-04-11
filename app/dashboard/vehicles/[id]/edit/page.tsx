@@ -151,6 +151,8 @@ export default async function EditVehiclePage({ params }: PageProps) {
               />
             </div>
 
+
+
             <div>
               <label htmlFor="hu_until" className="mb-1 block text-sm font-medium">
                 HU-bis
@@ -160,6 +162,19 @@ export default async function EditVehiclePage({ params }: PageProps) {
                 name="hu_until"
                 type="date"
                 defaultValue={formatDateForInput(vehicle.hu_until)}
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+
+                        <div>
+              <label htmlFor="mileage_km" className="mb-1 block text-sm font-medium">
+                Kilometerstand
+              </label>
+              <input
+                id="mileage_km"
+                name="mileage_km"
+                type="number"
+                defaultValue={vehicle.mileage_km ?? ''}
                 className="w-full rounded-lg border px-3 py-2"
               />
             </div>
@@ -307,18 +322,6 @@ export default async function EditVehiclePage({ params }: PageProps) {
               />
             </div>
 
-            <div>
-              <label htmlFor="mileage_km" className="mb-1 block text-sm font-medium">
-                Kilometerstand
-              </label>
-              <input
-                id="mileage_km"
-                name="mileage_km"
-                type="number"
-                defaultValue={vehicle.mileage_km ?? ''}
-                className="w-full rounded-lg border px-3 py-2"
-              />
-            </div>
 
             <div>
               <label htmlFor="vat_type" className="mb-1 block text-sm font-medium">
