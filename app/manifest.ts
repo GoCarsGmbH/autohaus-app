@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Autohaus Dashboard',
-    short_name: 'Autohaus',
+    name: 'GO-CARS Bestand',
+    short_name: 'GO-CARS',
     description: 'Fahrzeugverwaltung für Einkauf, Verkauf und Analyse',
     start_url: '/',
     display: 'standalone',
