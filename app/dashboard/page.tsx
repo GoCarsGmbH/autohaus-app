@@ -54,6 +54,7 @@ export default async function DashboardPage({
 
   const params = await searchParams
   const status =
+    params.status === 'bestand' ||
     params.status === 'verfuegbar' ||
     params.status === 'reserviert' ||
     params.status === 'verkauft'
@@ -176,6 +177,12 @@ const { data, error } = await vehiclesQuery
               Alle
             </Link>
             <Link
+              href={dashboardHref('bestand', queryText, sort, dir)}
+              className={`rounded-lg border px-4 py-2 text-sm ${status === 'bestand' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
+            >
+              Bestand
+            </Link>
+            <Link
               href={dashboardHref('verfuegbar', queryText, sort, dir)}
               className={`rounded-lg border px-4 py-2 text-sm ${status === 'verfuegbar' ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
             >
@@ -193,6 +200,7 @@ const { data, error } = await vehiclesQuery
             >
               Verkauft
             </Link>
+
           </div>
 
       <div className="overflow-x-auto rounded-xl border">
