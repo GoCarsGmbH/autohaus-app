@@ -227,7 +227,17 @@ export default async function NewVehiclePage() {
               />
             </div>
 
-            
+            <div>
+              <label htmlFor="gross_weight_kg" className="mb-1 block text-sm font-medium">
+                Zulässiges Gesamtgewicht (kg)
+              </label>
+              <input
+                id="gross_weight_kg"
+                name="gross_weight_kg"
+                type="number"
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
 
             <div>
               <label htmlFor="axle_load_1_kg" className="mb-1 block text-sm font-medium">
