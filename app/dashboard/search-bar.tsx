@@ -7,10 +7,19 @@ export default function SearchBar() {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const router = useRouter()
-
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [value, setValue] = useState(searchParams.get('query') ?? '')
+
+  // URL -> Input synchron halten, falls man per Back/Forward navigiert
+  useEffect(() => {
+    const currentQuery = searchParams.get('query') ?? ''
+    if (currentQuery !== value) {
+      setValue(currentQuery)
+    }
+    // absichtlich nur auf searchParams reagieren
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -22,12 +31,17 @@ export default function SearchBar() {
         params.delete('query')
       }
 
-      const qs = params.toString()
-      router.replace(qs ? `${pathname}?${qs}` : pathname)
+      const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
+      const currentUrl = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname
+
+      // Nur navigieren, wenn sich die URL wirklich ändert
+      if (nextUrl !== currentUrl) {
+        router.replace(nextUrl)
+      }
     }, 300)
 
     return () => clearTimeout(timeout)
-  }, [value, pathname, router, searchParams])
+  }, [value, pathname, router]) // searchParams hier bewusst NICHT rein
 
   function clearSearch() {
     setValue('')
@@ -35,28 +49,22 @@ export default function SearchBar() {
     const params = new URLSearchParams(searchParams.toString())
     params.delete('query')
 
-    const qs = params.toString()
-    router.replace(qs ? `${pathname}?${qs}` : pathname)
+    const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
+    router.replace(nextUrl)
 
-    // Fokus zurück ins Feld
     inputRef.current?.focus()
   }
 
   return (
     <div className="relative w-full">
-        <input
+      <input
         ref={inputRef}
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-            e.preventDefault()
-            }
-        }}
-        placeholder="🔍 Suche (ID, Marke, Modell, FIN)"
+        placeholder="Suche nach ID, Marke, Modell oder FIN"
         className="w-full rounded-lg border px-4 py-2 pr-10 text-sm"
-        />
+      />
 
       {value && (
         <button

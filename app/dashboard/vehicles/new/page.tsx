@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { createVehicle } from '../actions'
 import { getUserProfile } from '@/lib/auth/get-user-profile'
+import { createVehicleWithDocuments } from '../actions'
 
 export default async function NewVehiclePage() {
   const { profile } = await getUserProfile()
@@ -17,7 +17,7 @@ export default async function NewVehiclePage() {
         <div>
           <h1 className="text-2xl font-semibold">Neues Fahrzeug anlegen</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Stammdaten, technische Daten und Einkaufsdaten erfassen.
+            Fahrzeugdaten und Dokumente in einem Schritt erfassen.
           </p>
         </div>
 
@@ -27,18 +27,13 @@ export default async function NewVehiclePage() {
         >
           Zurück zum Dashboard
         </Link>
-
-        
       </div>
 
-      
-
-      <form action={createVehicle} className="space-y-8">
+      <form action={createVehicleWithDocuments} className="space-y-8">
         <section className="rounded-2xl border p-5">
           <h2 className="mb-4 text-lg font-medium">Stammdaten</h2>
 
           <div className="grid gap-4 md:grid-cols-2">
-
             <div>
               <label htmlFor="vin" className="mb-1 block text-sm font-medium">
                 FIN *
@@ -65,7 +60,7 @@ export default async function NewVehiclePage() {
 
             <div>
               <label htmlFor="model" className="mb-1 block text-sm font-medium">
-                Model *
+                Modell *
               </label>
               <input
                 id="model"
@@ -76,14 +71,14 @@ export default async function NewVehiclePage() {
             </div>
 
             <div>
-            <label htmlFor="color" className="mb-1 block text-sm font-medium">
+              <label htmlFor="color" className="mb-1 block text-sm font-medium">
                 Farbe
-            </label>
-            <input
+              </label>
+              <input
                 id="color"
                 name="color"
                 className="w-full rounded-lg border px-3 py-2"
-            />
+              />
             </div>
 
             <div>
@@ -109,18 +104,6 @@ export default async function NewVehiclePage() {
                 className="w-full rounded-lg border px-3 py-2"
               />
             </div>
-
-            <div>
-              <label htmlFor="mileage_km" className="mb-1 block text-sm font-medium">
-                Kilometerstand
-              </label>
-              <input
-                id="mileage_km"
-                name="mileage_km"
-                type="number"
-                className="w-full rounded-lg border px-3 py-2"
-              />
-            </div>
           </div>
         </section>
 
@@ -128,27 +111,41 @@ export default async function NewVehiclePage() {
           <h2 className="mb-4 text-lg font-medium">Technische Daten</h2>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
+             <div>
               <label htmlFor="hsn" className="mb-1 block text-sm font-medium">
                 HSN
               </label>
               <input
                 id="hsn"
                 name="hsn"
+                type="text"
                 className="w-full rounded-lg border px-3 py-2"
               />
             </div>
-
-            <div>
+             <div>
               <label htmlFor="tsn" className="mb-1 block text-sm font-medium">
                 TSN
               </label>
               <input
                 id="tsn"
                 name="tsn"
+                type="text"
                 className="w-full rounded-lg border px-3 py-2"
               />
             </div>
+
+             <div>
+              <label htmlFor="TSN" className="mb-1 block text-sm font-medium">
+                TSN
+              </label>
+              <input
+                id="TSN"
+                name="TSN"
+                type="text"
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+
 
             <div>
               <label htmlFor="engine_ccm" className="mb-1 block text-sm font-medium">
@@ -277,17 +274,27 @@ export default async function NewVehiclePage() {
               />
             </div>
 
-
+            <div>
+              <label htmlFor="mileage_km" className="mb-1 block text-sm font-medium">
+                Kilometerstand
+              </label>
+              <input
+                id="mileage_km"
+                name="mileage_km"
+                type="number"
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
 
             <div>
               <label htmlFor="vat_type" className="mb-1 block text-sm font-medium">
-                USt-Status
+                Einkauf USt-Status
               </label>
               <select
                 id="vat_type"
                 name="vat_type"
-                defaultValue=""
                 className="w-full rounded-lg border px-3 py-2"
+                defaultValue=""
               >
                 <option value="">Bitte wählen</option>
                 <option value="mit_ust">mit USt</option>
@@ -302,13 +309,84 @@ export default async function NewVehiclePage() {
               <select
                 id="purchase_payment_method"
                 name="purchase_payment_method"
-                defaultValue=""
                 className="w-full rounded-lg border px-3 py-2"
+                defaultValue=""
               >
                 <option value="">Bitte wählen</option>
                 <option value="bar">Bar</option>
                 <option value="karte_ueberweisung">Karte / Überweisung</option>
               </select>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border p-5">
+          <h2 className="mb-4 text-lg font-medium">Dokumente</h2>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label htmlFor="fahrzeugbrief" className="mb-1 block text-sm font-medium">
+                Fahrzeugbrief
+              </label>
+              <input
+                id="fahrzeugbrief"
+                name="fahrzeugbrief"
+                type="file"
+                accept=".pdf,image/*"
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="fahrzeugschein" className="mb-1 block text-sm font-medium">
+                Fahrzeugschein
+              </label>
+              <input
+                id="fahrzeugschein"
+                name="fahrzeugschein"
+                type="file"
+                accept=".pdf,image/*"
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="kaufvertrag" className="mb-1 block text-sm font-medium">
+                Kaufvertrag
+              </label>
+              <input
+                id="kaufvertrag"
+                name="kaufvertrag"
+                type="file"
+                accept=".pdf,image/*"
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="fahrzeugbild" className="mb-1 block text-sm font-medium">
+                Fahrzeugbild (max. 100 KB)
+              </label>
+              <input
+                id="fahrzeugbild"
+                name="fahrzeugbild"
+                type="file"
+                accept="image/*"
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="tuev_bericht" className="mb-1 block text-sm font-medium">
+                TÜV-Bericht
+              </label>
+              <input
+                id="tuev_bericht"
+                name="tuev_bericht"
+                type="file"
+                accept=".pdf,image/*"
+                className="w-full rounded-lg border px-3 py-2"
+              />
             </div>
           </div>
         </section>

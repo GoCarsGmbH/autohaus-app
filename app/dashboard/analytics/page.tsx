@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getUserProfile } from '@/lib/auth/get-user-profile'
 
+
 type SearchParams = Promise<{
   period?: string
   selected?: string
@@ -171,6 +172,7 @@ export default async function AnalyticsPage({
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-4 py-3 text-left">Verkaufsdatum</th>
                 <th className="px-4 py-3 text-left">Fahrzeug_ID</th>
                 <th className="px-4 py-3 text-left">Marke</th>
                 <th className="px-4 py-3 text-left">Modell</th>
@@ -184,6 +186,11 @@ export default async function AnalyticsPage({
               {detailRows.length ? (
                 detailRows.map((row: any) => (
                   <tr key={row.vehicle_id} className="border-t">
+                    <td className="px-4 py-3">
+                      {row.sale_date
+                        ? new Intl.DateTimeFormat('de-DE').format(new Date(row.sale_date))
+                        : '—'}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <span>{row.internal_vehicle_id}</span>

@@ -46,6 +46,113 @@ function optionalDecimal(formData: FormData, key: string) {
   return parsed
 }
 
+function requiredFile(formData: FormData, key: string) {
+  const value = formData.get(key)
+
+  if (!(value instanceof File) || value.size === 0) {
+    throw new Error(`Datei "${key}" ist erforderlich.`)
+  }
+
+  return value
+}
+
+function optionalFile(formData: FormData, key: string) {
+  const value = formData.get(key)
+
+  if (!(value instanceof File) || value.size === 0) {
+    return null
+  }
+
+  return value
+}
+
+function sanitizeFileName(fileName: string) {
+  return fileName
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9.\-_]/g, '')
+}
+
+function bucketForDocumentType(documentType: string) {
+  switch (documentType) {
+    case 'fahrzeugbrief':
+      return 'vehicle-briefs'
+    case 'fahrzeugschein':
+      return 'vehicle-scheine'
+    case 'kaufvertrag':
+      return 'vehicle-contracts'
+    case 'fahrzeugbild':
+      return 'vehicle-images'
+    case 'tuev_bericht':
+      return 'vehicle-tuev-berichte'
+    case 'verkaufsrechnung':
+      return 'vehicle-contracts'
+    case 'verkaufsvertrag':
+      return 'vehicle-contracts'
+    default:
+      throw new Error('Ungültiger Dokumenttyp.')
+  }
+}
+
+function assertImageUnder100Kb(file: File, documentType: string) {
+  if (documentType !== 'fahrzeugbild') return
+
+  const maxBytes = 100 * 1024
+
+  if (!file.type.startsWith('image/')) {
+    throw new Error('Fahrzeugbild muss eine Bilddatei sein.')
+  }
+
+  if (file.size > maxBytes) {
+    throw new Error('Fahrzeugbild darf maximal 100 KB groß sein.')
+  }
+}
+
+async function uploadDocumentForVehicle(params: {
+  adminSupabase: ReturnType<typeof createAdminClient>
+  supabase: Awaited<ReturnType<typeof createClient>>
+  vehicleId: string
+  documentType: string
+  file: File
+}) {
+  const { adminSupabase, supabase, vehicleId, documentType, file } = params
+
+  assertImageUnder100Kb(file, documentType)
+
+  const bucket = bucketForDocumentType(documentType)
+  const safeName = sanitizeFileName(file.name)
+  const filePath = `${vehicleId}/${Date.now()}-${safeName}`
+
+  const { error: uploadError } = await adminSupabase.storage
+    .from(bucket)
+    .upload(filePath, file, {
+      contentType: file.type || 'application/octet-stream',
+      upsert: false,
+    })
+
+  if (uploadError) {
+    throw new Error(
+      `Fehler beim Datei-Upload in Bucket "${bucket}": ${uploadError.message}`
+    )
+  }
+
+  const { error: insertError } = await supabase.from('vehicle_documents').insert({
+    vehicle_id: vehicleId,
+    document_type: documentType,
+    file_name: file.name,
+    storage_bucket: bucket,
+    storage_path: filePath,
+    mime_type: file.type || null,
+    file_size_bytes: file.size,
+  })
+
+  if (insertError) {
+    throw new Error(
+      `Fehler beim Speichern des Dokumenteintrags (${documentType}): ${insertError.message}`
+    )
+  }
+}
+
 export async function createVehicle(formData: FormData) {
   const supabase = await createClient()
 
@@ -71,7 +178,6 @@ export async function createVehicle(formData: FormData) {
     axle_load_4_kg: optionalInteger(formData, 'axle_load_4_kg'),
     previous_owners: optionalInteger(formData, 'previous_owners'),
 
-  
     vat_type: optionalString(formData, 'vat_type'),
     purchase_payment_method: optionalString(formData, 'purchase_payment_method'),
   }
@@ -84,6 +190,110 @@ export async function createVehicle(formData: FormData) {
 
   revalidatePath('/dashboard')
   redirect('/dashboard')
+}
+
+export async function createVehicleWithDocuments(formData: FormData) {
+  const supabase = await createClient()
+  const adminSupabase = createAdminClient()
+
+  const payload = {
+    brand: requiredString(formData, 'brand'),
+    model: requiredString(formData, 'model'),
+    color: optionalString(formData, 'color'),
+    vin: requiredString(formData, 'vin'),
+    first_registration: optionalString(formData, 'first_registration'),
+    purchase_price: optionalDecimal(formData, 'purchase_price'),
+    hu_until: optionalString(formData, 'hu_until'),
+    mileage_km: optionalInteger(formData, 'mileage_km'),
+
+    hsn: optionalString(formData, 'hsn'),
+    tsn: optionalString(formData, 'tsn'),
+    engine_ccm: optionalInteger(formData, 'engine_ccm'),
+    power_kw: optionalInteger(formData, 'power_kw'),
+    kerb_weight_kg: optionalInteger(formData, 'kerb_weight_kg'),
+    gross_weight_kg: optionalInteger(formData, 'gross_weight_kg'),
+    axle_load_1_kg: optionalInteger(formData, 'axle_load_1_kg'),
+    axle_load_2_kg: optionalInteger(formData, 'axle_load_2_kg'),
+    axle_load_3_kg: optionalInteger(formData, 'axle_load_3_kg'),
+    axle_load_4_kg: optionalInteger(formData, 'axle_load_4_kg'),
+    previous_owners: optionalInteger(formData, 'previous_owners'),
+
+    vat_type: optionalString(formData, 'vat_type'),
+    purchase_payment_method: optionalString(formData, 'purchase_payment_method'),
+  }
+
+  const { data: insertedVehicle, error: vehicleError } = await supabase
+    .from('vehicles')
+    .insert(payload)
+    .select('id')
+    .single()
+
+  if (vehicleError || !insertedVehicle) {
+    throw new Error(
+      `Fehler beim Speichern des Fahrzeugs: ${vehicleError?.message ?? 'Unbekannter Fehler'}`
+    )
+  }
+
+  const vehicleId = insertedVehicle.id
+
+  const fahrzeugbrief = optionalFile(formData, 'fahrzeugbrief')
+  const fahrzeugschein = optionalFile(formData, 'fahrzeugschein')
+  const kaufvertrag = optionalFile(formData, 'kaufvertrag')
+  const fahrzeugbild = optionalFile(formData, 'fahrzeugbild')
+  const tuevBericht = optionalFile(formData, 'tuev_bericht')
+
+  if (fahrzeugbrief) {
+    await uploadDocumentForVehicle({
+      adminSupabase,
+      supabase,
+      vehicleId,
+      documentType: 'fahrzeugbrief',
+      file: fahrzeugbrief,
+    })
+  }
+
+  if (fahrzeugschein) {
+    await uploadDocumentForVehicle({
+      adminSupabase,
+      supabase,
+      vehicleId,
+      documentType: 'fahrzeugschein',
+      file: fahrzeugschein,
+    })
+  }
+
+  if (kaufvertrag) {
+    await uploadDocumentForVehicle({
+      adminSupabase,
+      supabase,
+      vehicleId,
+      documentType: 'kaufvertrag',
+      file: kaufvertrag,
+    })
+  }
+
+  if (fahrzeugbild) {
+    await uploadDocumentForVehicle({
+      adminSupabase,
+      supabase,
+      vehicleId,
+      documentType: 'fahrzeugbild',
+      file: fahrzeugbild,
+    })
+  }
+
+  if (tuevBericht) {
+    await uploadDocumentForVehicle({
+      adminSupabase,
+      supabase,
+      vehicleId,
+      documentType: 'tuev_bericht',
+      file: tuevBericht,
+    })
+  }
+
+  revalidatePath('/dashboard')
+  redirect(`/dashboard/vehicles/${vehicleId}`)
 }
 
 export type SaleFormState = {
@@ -180,10 +390,8 @@ export async function updateVehicle(formData: FormData) {
     axle_load_4_kg: optionalInteger(formData, 'axle_load_4_kg'),
     previous_owners: optionalInteger(formData, 'previous_owners'),
 
-   
     vat_type: optionalString(formData, 'vat_type'),
     purchase_payment_method: optionalString(formData, 'purchase_payment_method'),
-    
   }
 
   const { error } = await supabase
@@ -201,53 +409,6 @@ export async function updateVehicle(formData: FormData) {
   redirect(`/dashboard/vehicles/${vehicleId}`)
 }
 
-function requiredFile(formData: FormData, key: string) {
-  const value = formData.get(key)
-
-  if (!(value instanceof File) || value.size === 0) {
-    throw new Error(`Datei "${key}" ist erforderlich.`)
-  }
-
-  return value
-}
-
-function sanitizeFileName(fileName: string) {
-  return fileName
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9.\-_]/g, '')
-}
-
-function bucketForDocumentType(documentType: string) {
-  switch (documentType) {
-    case 'fahrzeugbrief':
-      return 'vehicle-briefs'
-    case 'fahrzeugschein':
-      return 'vehicle-scheine'
-    case 'kaufvertrag':
-      return 'vehicle-contracts'
-    case 'fahrzeugbild':
-      return 'vehicle-images'
-    default:
-      throw new Error('Ungültiger Dokumenttyp.')
-      
-  }
-}
-
-function assertImageUnder100Kb(file: File, documentType: string) {
-  if (documentType !== 'fahrzeugbild') return
-
-  const maxBytes = 100 * 1024
-
-  if (!file.type.startsWith('image/')) {
-    throw new Error('Fahrzeugbild muss eine Bilddatei sein.')
-  }
-
-  if (file.size > maxBytes) {
-    throw new Error('Fahrzeugbild darf maximal 100 KB groß sein.')
-  }
-}
-
 export async function uploadVehicleDocument(formData: FormData) {
   const supabase = await createClient()
   const adminSupabase = createAdminClient()
@@ -255,6 +416,7 @@ export async function uploadVehicleDocument(formData: FormData) {
   const vehicleId = requiredString(formData, 'vehicle_id')
   const documentType = requiredString(formData, 'document_type')
   const file = requiredFile(formData, 'document')
+
   assertImageUnder100Kb(file, documentType)
 
   const bucket = bucketForDocumentType(documentType)
@@ -270,7 +432,9 @@ export async function uploadVehicleDocument(formData: FormData) {
     })
 
   if (uploadError) {
-    throw new Error(`Fehler beim Datei-Upload: ${uploadError.message}`)
+    throw new Error(
+      `Fehler beim Datei-Upload in Bucket "${bucket}": ${uploadError.message}`
+    )
   }
 
   const { error: insertError } = await supabase.from('vehicle_documents').insert({
@@ -284,7 +448,9 @@ export async function uploadVehicleDocument(formData: FormData) {
   })
 
   if (insertError) {
-    throw new Error(`Fehler beim Speichern des Dokumenteintrags: ${insertError.message}`)
+    throw new Error(
+      `Fehler beim Speichern des Dokumenteintrags: ${insertError.message}`
+    )
   }
 
   revalidatePath(`/dashboard/vehicles/${vehicleId}`)
@@ -305,7 +471,9 @@ export async function deleteVehicleDocument(formData: FormData) {
     .single()
 
   if (fetchError || !document) {
-    throw new Error(`Dokument konnte nicht geladen werden: ${fetchError?.message ?? 'Nicht gefunden'}`)
+    throw new Error(
+      `Dokument konnte nicht geladen werden: ${fetchError?.message ?? 'Nicht gefunden'}`
+    )
   }
 
   const { error: storageError } = await adminSupabase.storage
@@ -322,7 +490,9 @@ export async function deleteVehicleDocument(formData: FormData) {
     .eq('id', documentId)
 
   if (deleteError) {
-    throw new Error(`Dokumenteintrag konnte nicht gelöscht werden: ${deleteError.message}`)
+    throw new Error(
+      `Dokumenteintrag konnte nicht gelöscht werden: ${deleteError.message}`
+    )
   }
 
   revalidatePath(`/dashboard/vehicles/${vehicleId}`)

@@ -15,6 +15,7 @@ function formatDate(value: string | null) {
   return new Intl.DateTimeFormat('de-DE').format(new Date(value))
 }
 
+
 function formatCurrency(value: number | null) {
   if (value === null || value === undefined) return '—'
   return new Intl.NumberFormat('de-DE', {
@@ -34,6 +35,14 @@ export default async function VehicleDetailPage({ params }: PageProps) {
   const { profile } = await getUserProfile()
   const isAdmin = profile?.role === 'admin'
 
+  const adminOnlyDocumentTypes = [
+  'kaufvertrag',
+  'verkaufsrechnung',
+  'verkaufsvertrag',
+]
+
+
+
   const [{ data: vehicle, error: vehicleError }, { data: documents, error: documentsError }] =
     await Promise.all([
       supabase
@@ -48,6 +57,12 @@ export default async function VehicleDetailPage({ params }: PageProps) {
         .order('created_at', { ascending: false }),
     ])
 
+    const visibleDocuments =
+  documents?.filter((doc) => {
+    if (isAdmin) return true
+    return !adminOnlyDocumentTypes.includes(doc.document_type)
+  }) ?? []
+  
     const vehicleImage =
         documents?.find((doc) => doc.document_type === 'fahrzeugbild') ?? null
 
@@ -215,8 +230,10 @@ export default async function VehicleDetailPage({ params }: PageProps) {
         <option value="fahrzeugbrief">Fahrzeugbrief</option>
         <option value="fahrzeugschein">Fahrzeugschein</option>
         <option value="kaufvertrag">Kaufvertrag</option>
-        <option value="tuevbericht">TÜV-Bericht</option>
         <option value="fahrzeugbild">Fahrzeugbild</option>
+        <option value="tuev_bericht">TÜV-Bericht</option>
+        <option value="verkaufsrechnung">Verkaufsrechnung</option>
+        <option value="verkaufsvertrag">Verkaufsvertrag</option>
       </select>
     </div>
 
@@ -245,9 +262,9 @@ export default async function VehicleDetailPage({ params }: PageProps) {
   </form>
 ) : null}
 
-  {documents && documents.length > 0 ? (
-    <div className="space-y-3">
-      {documents.map((doc) => (
+ {visibleDocuments.length > 0 ? (
+  <div className="space-y-3">
+    {visibleDocuments.map((doc) => (
   <div
     key={doc.id}
     className="flex items-center justify-between rounded-xl border p-4"
