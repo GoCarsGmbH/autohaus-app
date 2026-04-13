@@ -30,6 +30,9 @@ export default function SortBar() {
         <option value="created_at">Zugefügtes Datum</option>
         <option value="first_registration">Erstzulassung</option>
         <option value="brand_model">Marke & Modell</option>
+        <option value="gear_type">Getriebe</option>
+        <option value="fuel_type">Kraftstoff</option>
+        
       </select>
 
       <select

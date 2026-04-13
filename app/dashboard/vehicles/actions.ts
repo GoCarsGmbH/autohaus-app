@@ -157,6 +157,7 @@ export async function createVehicle(formData: FormData) {
   const supabase = await createClient()
 
   const payload = {
+    status: optionalString(formData, 'status') ?? 'verfuegbar',
     brand: requiredString(formData, 'brand'),
     model: requiredString(formData, 'model'),
     color: optionalString(formData, 'color'),
@@ -168,6 +169,8 @@ export async function createVehicle(formData: FormData) {
 
     hsn: optionalString(formData, 'hsn'),
     tsn: optionalString(formData, 'tsn'),
+    gear_type: optionalString(formData, 'gear_type'),
+    fuel_type: optionalString(formData, 'fuel_type'),
     engine_ccm: optionalInteger(formData, 'engine_ccm'),
     power_kw: optionalInteger(formData, 'power_kw'),
     kerb_weight_kg: optionalInteger(formData, 'kerb_weight_kg'),
@@ -196,7 +199,9 @@ export async function createVehicleWithDocuments(formData: FormData) {
   const supabase = await createClient()
   const adminSupabase = createAdminClient()
 
+
   const payload = {
+    status: optionalString(formData, 'status') ?? 'verfuegbar',
     brand: requiredString(formData, 'brand'),
     model: requiredString(formData, 'model'),
     color: optionalString(formData, 'color'),
@@ -208,6 +213,8 @@ export async function createVehicleWithDocuments(formData: FormData) {
 
     hsn: optionalString(formData, 'hsn'),
     tsn: optionalString(formData, 'tsn'),
+    gear_type: optionalString(formData, 'gear_type'),
+    fuel_type: optionalString(formData, 'fuel_type'),
     engine_ccm: optionalInteger(formData, 'engine_ccm'),
     power_kw: optionalInteger(formData, 'power_kw'),
     kerb_weight_kg: optionalInteger(formData, 'kerb_weight_kg'),
@@ -369,6 +376,7 @@ export async function updateVehicle(formData: FormData) {
   const vehicleId = requiredString(formData, 'vehicle_id')
 
   const payload = {
+    status: optionalString(formData, 'status') ?? 'verfuegbar',
     brand: requiredString(formData, 'brand'),
     model: requiredString(formData, 'model'),
     color: optionalString(formData, 'color'),
@@ -380,6 +388,8 @@ export async function updateVehicle(formData: FormData) {
 
     hsn: optionalString(formData, 'hsn'),
     tsn: optionalString(formData, 'tsn'),
+    gear_type: optionalString(formData, 'gear_type'),
+    fuel_type: optionalString(formData, 'fuel_type'),
     engine_ccm: optionalInteger(formData, 'engine_ccm'),
     power_kw: optionalInteger(formData, 'power_kw'),
     kerb_weight_kg: optionalInteger(formData, 'kerb_weight_kg'),

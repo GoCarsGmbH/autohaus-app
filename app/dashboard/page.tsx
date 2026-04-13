@@ -67,7 +67,9 @@ export default async function DashboardPage({
 const sort =
   params.sort === 'brand_model' ||
   params.sort === 'first_registration' ||
-  params.sort === 'created_at'
+  params.sort === 'created_at' ||
+  params.sort === 'fuel_type' ||
+  params.sort === 'gear_type'
     ? params.sort
     : 'created_at'
 
@@ -77,7 +79,7 @@ const ascending = dir === 'asc'
 let vehiclesQuery = supabase
   .from('vehicles_dashboard')
   .select(
-    'id, internal_vehicle_id, brand, model, vin, first_registration, purchase_price, hu_until, mileage_km, image_document_id, status, created_at'
+    'id, internal_vehicle_id, brand, model, vin, first_registration, purchase_price, hu_until, mileage_km, image_document_id, status, created_at, fuel_type, gear_type'
   )
 
 if (status !== 'alle') {
@@ -210,13 +212,13 @@ const { data, error } = await vehiclesQuery
               <th className="px-4 py-3 text-left">Interne Fahrzeug ID</th>
               <th className="px-4 py-3 text-left">Marke</th>
               <th className="px-4 py-3 text-left">Model</th>
+              <th className="px-4 py-3 text-left">Getriebe</th>
               <th className="px-4 py-3 text-left">FIN</th>
               <th className="px-4 py-3 text-left">Erstzulassung</th>
               <th className="px-4 py-3 text-left">Kilometerstand</th>
-              { isAdmin ? (
-              <th className="px-4 py-3 text-left">Kaufpreis</th>
-              ) : null }
+              <th className="px-4 py-3 text-left">Kraftstoff</th>
               <th className="px-4 py-3 text-left">HU-bis</th>
+              <th className="px-4 py-3 text-left">Status</th>
               <th className="px-4 py-3 text-left">Details</th>
               <th className="px-4 py-3 text-left">Verkauf</th>
             </tr>
@@ -240,13 +242,13 @@ const { data, error } = await vehiclesQuery
                     </td>
                   <td className="px-4 py-3">{vehicle.brand}</td>
                   <td className="px-4 py-3">{vehicle.model}</td>
+                  <td className="px-4 py-3">{vehicle.gear_type ?? '—'}</td>
                   <td className="px-4 py-3">{vehicle.vin}</td>
                   <td className="px-4 py-3">{vehicle.first_registration ?? '—'}</td>
                   <td className="px-4 py-3">{vehicle.mileage_km ?? '—'}</td>
-                  { isAdmin ? (
-                  <td className="px-4 py-3">{vehicle.purchase_price ?? '—'}</td>
-                  ) : null }
+                  <td className="px-4 py-3">{vehicle.fuel_type ?? '—'}</td>
                   <td className="px-4 py-3">{vehicle.hu_until ?? '—'}</td>
+                  <td className="px-4 py-3">{vehicle.status ?? '—'}</td>
                   <td className="px-4 py-3">
                     <Link
                       href={`/dashboard/vehicles/${vehicle.id}`}

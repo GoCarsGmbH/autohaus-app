@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'GO-CARS INVENAR',
+    default: 'GO-CARS INVENTAR',
     template: '%s | GO-CARS INVENTAR',
   },
   description: 'Fahrzeugverwaltung für Einkauf, Verkauf und Analyse',

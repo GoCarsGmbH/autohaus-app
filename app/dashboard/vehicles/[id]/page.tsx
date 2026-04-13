@@ -62,7 +62,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
     if (isAdmin) return true
     return !adminOnlyDocumentTypes.includes(doc.document_type)
   }) ?? []
-  
+
     const vehicleImage =
         documents?.find((doc) => doc.document_type === 'fahrzeugbild') ?? null
 
@@ -154,6 +154,8 @@ export default async function VehicleDetailPage({ params }: PageProps) {
         <div className="grid gap-4 md:grid-cols-2">
           <div><span className="font-medium">HSN :</span> {displayValue(vehicle.hsn)}</div>
           <div><span className="font-medium">TSN :</span> {displayValue(vehicle.tsn)}</div>
+          <div><span className="font-medium">Getriebe:</span> {displayValue(vehicle.gear_type)}</div>
+          <div><span className="font-medium">Kraftstoff:</span> {displayValue(vehicle.fuel_type)}</div>
           <div><span className="font-medium">Hubraum (cm³):</span> {displayValue(vehicle.engine_ccm)}</div>
           <div><span className="font-medium">Leistung (kW):</span> {displayValue(vehicle.power_kw)}</div>
           <div><span className="font-medium">Leergewicht (kg):</span> {displayValue(vehicle.kerb_weight_kg)}</div>

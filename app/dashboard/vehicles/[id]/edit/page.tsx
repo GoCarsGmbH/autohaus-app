@@ -70,10 +70,31 @@ export default async function EditVehiclePage({ params }: PageProps) {
       </div>
 
       <form action={updateVehicle} className="space-y-8">
+
+        
+
         <input type="hidden" name="vehicle_id" value={vehicle.id} />
 
         <section className="rounded-2xl border p-5">
           <h2 className="mb-4 text-lg font-medium">Stammdaten</h2>
+
+        <div>
+              <label htmlFor="status" className="mb-1 block text-sm font-medium">
+                Status
+              </label>
+              <select
+                id="status"
+                name="status"
+                className="w-full rounded-lg border px-3 py-2"
+                defaultValue=""
+              >
+                <option value="">Bitte wählen</option>
+                <option value="verfuegbar">Verfügbar</option>
+                <option value="reserviert">Reserviert</option>
+                <option value="verkauft">Verkauft</option>
+                <option value="bestand">Bestand</option>
+              </select>
+            </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
@@ -207,18 +228,44 @@ export default async function EditVehiclePage({ params }: PageProps) {
                 className="w-full rounded-lg border px-3 py-2"
               />
             </div>
+
             <div>
-              <label htmlFor="engine_ccm" className="mb-1 block text-sm font-medium">
-                Hubraum (cm³)
+              <label htmlFor="gear_type" className="mb-1 block text-sm font-medium">
+                Getriebe
               </label>
-              <input
-                id="engine_ccm"
-                name="engine_ccm"
-                type="number"
-                defaultValue={vehicle.engine_ccm ?? ''}
+              <select
+                id="gear_type"
+                name="gear_type"
+                defaultValue={vehicle.gear_type ?? ''}
                 className="w-full rounded-lg border px-3 py-2"
-              />
+              >
+                <option value="">Bitte wählen</option>
+                <option value="Manuell">Manuell</option>
+                <option value="Automatik">Automatik</option>
+                <option value="Halbautomatik">Halbautomatik</option>
+              </select>
             </div>
+
+            <div>
+              <label htmlFor="fuel_type" className="mb-1 block text-sm font-medium">
+                Kraftstoff
+              </label>
+              <select
+                id="fuel_type"
+                name="fuel_type"
+                defaultValue={vehicle.fuel_type ?? ''}
+                className="w-full rounded-lg border px-3 py-2"
+              >
+                <option value="">Bitte wählen</option>
+                <option value="Benzin">Benzin</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Elektro">Elektro</option>
+                <option value="Autogas">Autogas</option>
+                <option value="Diesel-Hybrid">Diesel-Hybrid</option>
+                <option value="Benzin-Hybrid">Benzin-Hybrid</option>
+              </select>
+            </div>
+        
             <div>
               <label htmlFor="engine_ccm" className="mb-1 block text-sm font-medium">
                 Hubraum (cm³)

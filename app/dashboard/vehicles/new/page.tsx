@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { getUserProfile } from '@/lib/auth/get-user-profile'
 import { createVehicleWithDocuments } from '../actions'
 
+
 export default async function NewVehiclePage() {
   const { profile } = await getUserProfile()
   const isAdmin = profile?.role === 'admin'
@@ -32,6 +33,24 @@ export default async function NewVehiclePage() {
       <form action={createVehicleWithDocuments} className="space-y-8">
         <section className="rounded-2xl border p-5">
           <h2 className="mb-4 text-lg font-medium">Stammdaten</h2>
+
+          <div>
+              <label htmlFor="status" className="mb-1 block text-sm font-medium">
+                Status
+              </label>
+              <select
+                id="status"
+                name="status"
+                className="w-full rounded-lg border px-3 py-2"
+                defaultValue=""
+              >
+                <option value="">Bitte wählen</option>
+                <option value="verfuegbar">Verfügbar</option>
+                <option value="reserviert">Reserviert</option>
+                <option value="verkauft">Verkauft</option>
+                <option value="bestand">Bestand</option>
+              </select>
+            </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
@@ -134,16 +153,41 @@ export default async function NewVehiclePage() {
               />
             </div>
 
-             <div>
-              <label htmlFor="TSN" className="mb-1 block text-sm font-medium">
-                TSN
+           <div>
+              <label htmlFor="gear_type" className="mb-1 block text-sm font-medium">
+                Getriebe
               </label>
-              <input
-                id="TSN"
-                name="TSN"
-                type="text"
+              <select
+                id="gear_type"
+                name="gear_type"
                 className="w-full rounded-lg border px-3 py-2"
-              />
+                defaultValue=""
+              >
+                <option value="">Bitte wählen</option>
+                <option value="Manuell">Manuell</option>
+                <option value="Automatik">Automatik</option>
+                <option value="Halbautomatik">Halbautomatik</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="fuel_type" className="mb-1 block text-sm font-medium">
+                Kraftstoff
+              </label>
+              <select
+                id="fuel_type"
+                name="fuel_type"
+                className="w-full rounded-lg border px-3 py-2"
+                defaultValue=""
+              >
+                <option value="">Bitte wählen</option>
+                <option value="Benzin">Benzin</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Elektro">Elektro</option>
+                <option value="Autogas">Autogas</option>
+                <option value="Diesel-Hybrid">Diesel-Hybrid</option>
+                <option value="Benzin-Hybrid">Benzin-Hybrid</option>
+              </select>
             </div>
 
 
@@ -183,17 +227,7 @@ export default async function NewVehiclePage() {
               />
             </div>
 
-            <div>
-              <label htmlFor="gross_weight_kg" className="mb-1 block text-sm font-medium">
-                Zulässiges Gesamtgewicht (kg)
-              </label>
-              <input
-                id="gross_weight_kg"
-                name="gross_weight_kg"
-                type="number"
-                className="w-full rounded-lg border px-3 py-2"
-              />
-            </div>
+            
 
             <div>
               <label htmlFor="axle_load_1_kg" className="mb-1 block text-sm font-medium">
