@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Go-Cars Autohaus',
-    short_name: 'Autohaus',
+    name: 'Go-Cars Inventar',
+    short_name: 'Inventar',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
