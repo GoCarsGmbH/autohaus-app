@@ -92,7 +92,7 @@ export default async function EditVehiclePage({ params }: PageProps) {
                 <option value="verfuegbar">Verfügbar</option>
                 <option value="reserviert">Reserviert</option>
                 <option value="verkauft">Verkauft</option>
-                <option value="bestand">Bestand</option>
+                <option value="betrieb">Betrieb</option>
               </select>
             </div>
 

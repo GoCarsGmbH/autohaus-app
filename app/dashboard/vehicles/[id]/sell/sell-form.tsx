@@ -146,7 +146,7 @@ export default function SellForm({ vehicle }: SellFormProps) {
               <option value="verfuegbar">Verfügbar</option>
               <option value="reserviert">Reserviert</option>
               <option value="verkauft">Verkauft</option>
-              <option value="bestand">Bestand</option>
+              <option value="betrieb">Betrieb</option>
             </select>
           </div>
         </div>

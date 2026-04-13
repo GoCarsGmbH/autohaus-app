@@ -138,6 +138,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
       <section className="rounded-2xl border p-5">
         <h2 className="mb-4 text-lg font-medium">Stammdaten</h2>
         <div className="grid gap-4 md:grid-cols-2">
+          <div><span className="font-medium">Status:</span> {displayValue(vehicle.status)}</div>
           <div><span className="font-medium">Interne Fahrzeug ID:</span> {displayValue(vehicle.internal_vehicle_id)}</div>
           <div><span className="font-medium">FIN:</span> {displayValue(vehicle.vin)}</div>
           <div><span className="font-medium">Marke:</span> {displayValue(vehicle.brand)}</div>
@@ -182,7 +183,6 @@ export default async function VehicleDetailPage({ params }: PageProps) {
       <section className="rounded-2xl border p-5">
         <h2 className="mb-4 text-lg font-medium">Verkauf</h2>
         <div className="grid gap-4 md:grid-cols-2">
-          <div><span className="font-medium">Status:</span> {displayValue(vehicle.status)}</div>
           <div><span className="font-medium">Käufer:</span> {displayValue(vehicle.buyer_name)}</div>
           <div><span className="font-medium">Verkaufspreis:</span> {formatCurrency(vehicle.sale_price)}</div>
           <div><span className="font-medium">Verkaufsdatum:</span> {formatDate(vehicle.sale_date)}</div>

@@ -48,7 +48,7 @@ export default async function NewVehiclePage() {
                 <option value="verfuegbar">Verfügbar</option>
                 <option value="reserviert">Reserviert</option>
                 <option value="verkauft">Verkauft</option>
-                <option value="bestand">Bestand</option>
+                <option value="betrieb">Betrieb</option>
               </select>
             </div>
 
