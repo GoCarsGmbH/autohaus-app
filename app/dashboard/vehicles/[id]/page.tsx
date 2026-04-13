@@ -215,6 +215,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
         <option value="fahrzeugbrief">Fahrzeugbrief</option>
         <option value="fahrzeugschein">Fahrzeugschein</option>
         <option value="kaufvertrag">Kaufvertrag</option>
+        <option value="tuevbericht">TÜV-Bericht</option>
         <option value="fahrzeugbild">Fahrzeugbild</option>
       </select>
     </div>
