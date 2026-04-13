@@ -3,16 +3,16 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'GO-CARS BESTAND',
-    template: '%s | GO-CARS ARCHIV',
+    default: 'GO-CARS INVENAR',
+    template: '%s | GO-CARS INVENTAR',
   },
   description: 'Fahrzeugverwaltung für Einkauf, Verkauf und Analyse',
-  applicationName: 'GO-CARS BESTAND',
+  applicationName: 'GO-CARS INVENTAR',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'GO-CARS BESTAND',
+    title: 'GO-CARS INVENTAR',
   },
 }
 
