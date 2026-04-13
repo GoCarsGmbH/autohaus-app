@@ -59,6 +59,8 @@ export async function createVehicle(formData: FormData) {
     hu_until: optionalString(formData, 'hu_until'),
     mileage_km: optionalInteger(formData, 'mileage_km'),
 
+    hsn: optionalString(formData, 'hsn'),
+    tsn: optionalString(formData, 'tsn'),
     engine_ccm: optionalInteger(formData, 'engine_ccm'),
     power_kw: optionalInteger(formData, 'power_kw'),
     kerb_weight_kg: optionalInteger(formData, 'kerb_weight_kg'),
@@ -166,6 +168,8 @@ export async function updateVehicle(formData: FormData) {
     hu_until: optionalString(formData, 'hu_until'),
     mileage_km: optionalInteger(formData, 'mileage_km'),
 
+    hsn: optionalString(formData, 'hsn'),
+    tsn: optionalString(formData, 'tsn'),
     engine_ccm: optionalInteger(formData, 'engine_ccm'),
     power_kw: optionalInteger(formData, 'power_kw'),
     kerb_weight_kg: optionalInteger(formData, 'kerb_weight_kg'),

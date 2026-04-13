@@ -186,6 +186,40 @@ export default async function EditVehiclePage({ params }: PageProps) {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
+              <label htmlFor="hsn" className="mb-1 block text-sm font-medium">
+                HSN
+              </label>
+              <input
+                id="hsn"
+                name="hsn"
+                defaultValue={vehicle.hsn ?? ''}
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+            <div>
+              <label htmlFor="tsn" className="mb-1 block text-sm font-medium">
+                TSN
+              </label>
+              <input
+                id="tsn"
+                name="tsn"
+                defaultValue={vehicle.tsn ?? ''}
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+            <div>
+              <label htmlFor="engine_ccm" className="mb-1 block text-sm font-medium">
+                Hubraum (cm³)
+              </label>
+              <input
+                id="engine_ccm"
+                name="engine_ccm"
+                type="number"
+                defaultValue={vehicle.engine_ccm ?? ''}
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </div>
+            <div>
               <label htmlFor="engine_ccm" className="mb-1 block text-sm font-medium">
                 Hubraum (cm³)
               </label>

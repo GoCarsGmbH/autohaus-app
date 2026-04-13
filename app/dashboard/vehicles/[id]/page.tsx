@@ -137,6 +137,8 @@ export default async function VehicleDetailPage({ params }: PageProps) {
       <section className="rounded-2xl border p-5">
         <h2 className="mb-4 text-lg font-medium">Technische Daten</h2>
         <div className="grid gap-4 md:grid-cols-2">
+          <div><span className="font-medium">HSN :</span> {displayValue(vehicle.hsn)}</div>
+          <div><span className="font-medium">TSN :</span> {displayValue(vehicle.tsn)}</div>
           <div><span className="font-medium">Hubraum (cm³):</span> {displayValue(vehicle.engine_ccm)}</div>
           <div><span className="font-medium">Leistung (kW):</span> {displayValue(vehicle.power_kw)}</div>
           <div><span className="font-medium">Leergewicht (kg):</span> {displayValue(vehicle.kerb_weight_kg)}</div>
